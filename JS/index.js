@@ -4,8 +4,9 @@ var $messages = $('.messages-content'),
 
 $(window).load(function() {
   $messages.mCustomScrollbar();
+  startnewfunc();
   setTimeout(function() {
-    fakeMessage('Hi there, I\'m MedBot and you?');
+    fakeMessage('Hi there, I\'m MedBot your own virtual healthcare assistant.');
   }, 100);
 });
 
@@ -19,10 +20,14 @@ function updateScrollbar() {
 
 function setDate(){
   d = new Date()
-  if (m != d.getMinutes()) {
+  
     m = d.getMinutes();
+    if(m<10){
+        m = '0' + m;
+        
+    }
     $('<div class="timestamp">' + d.getHours() + ':' + m + '</div>').appendTo($('.message:last'));
-  }
+  
 }
 
 function insertMessage() {
@@ -42,6 +47,11 @@ function insertMessage() {
         })
         .done(function(Data) {
         fakeMessage(Data.key);
+        if(Data.conend==1)
+        {
+          $("#text_input").attr('readonly','readonly');
+          $("#text_input").val('This Diagnosis is complete Please use the start new Diagnosis button to start with a new one ');
+        }
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
           alert(textStatus);
@@ -52,7 +62,16 @@ function insertMessage() {
 $('.message-submit').click(function() {
   insertMessage();
 });
-
+$('.message-submit2').click(function() {
+  /*$('.messages').empty();
+  $('.messages').append('<div class="messages-content"></div>');
+   $messages.mCustomScrollbar();
+ setTimeout(function() {
+    fakeMessage('Hi there, I\'m MedBot you own virtual healthcare assistant');
+  }, 100);*/
+ location.reload();
+ startnewfunc();
+});
 $(window).on('keydown', function(e) {
   if (e.which == 13) {
     insertMessage();
@@ -77,4 +96,20 @@ function fakeMessage(msg) {
     i++;
   }, 1000 + (Math.random() * 20) * 100);
 
+}
+
+function startnewfunc() {
+  msg = 'startnew';
+  $.ajax({
+          url: "http://"+window.location.host+"/cookclearquery",
+        dataType: 'json',
+        method: "POST",
+        data: { key:msg }
+        })
+        .done(function(Data) {
+        console.log(Data.key);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          alert(textStatus);
+        });
 }
